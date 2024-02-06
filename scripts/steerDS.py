@@ -27,7 +27,13 @@ class SteerDataSet(Dataset):
         else:
             img = self.transform(img)   
         
-        steering = f.split("/")[-1].split(self.img_ext)[0][6:]
-        steering = np.float32(steering)        
+        steering = f.split("\\")[-1].split(self.img_ext)[0][6:]
+        steering = np.float32(float(steering))        
                       
         return img, steering
+
+if __name__ == "__main__":
+    pass
+    # DS = SteerDataSet("data\\track3")
+    # for item in DS:
+    #     print(item[0].shape, item[1])
