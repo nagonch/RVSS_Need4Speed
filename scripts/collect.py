@@ -5,24 +5,20 @@ import os
 import cv2
 import numpy as np
 from pynput import keyboard
-import argparse
+import yaml
 
+with open('scripts/collect_config.yaml', 'r') as file:
+    CONFIG = yaml.safe_load(file)
 script_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.abspath(os.path.join(script_path, "../PenguinPi-robot/software/python/client/")))
-from pibot_client import PiBot
 
-parser = argparse.ArgumentParser(description='PiBot client')
-parser.add_argument('--ip', type=str, default='localhost', help='IP address of PiBot')
-parser.add_argument('--im_num', type = int, default = 0)
-parser.add_argument('--folder', type = str, default = 'train')
-args = parser.parse_args()
-
-if not os.path.exists(script_path+"/../data/"+args.folder):
+if not os.path.exists(script_path+"/../data/"+CONFIG['folder']):
     data_path = script_path.replace('scripts', 'data')
-    print(f'Folder "{args.folder}" in path {data_path} does not exist. Please create it.')
+    print(f'Folder "{CONFIG.folder}" in path {data_path} does not exist. Please create it.')
     exit()
 
-bot = PiBot(ip=args.ip)
+from pibot_client import PiBot
+bot = PiBot(ip=CONFIG['ip-num'])
 # stop the robot
 
 bot.setVelocity(0, 0)
@@ -41,7 +37,7 @@ print("GO!")
 
 # Initialize variables
 angle = 0
-im_number = args.im_num
+im_number = CONFIG['im-num']
 continue_running = True
 
 def on_press(key):
@@ -54,10 +50,10 @@ def on_press(key):
             angle = 0
         elif key == keyboard.Key.right:
             print("right")
-            angle += 0.1
+            angle += CONFIG['turn-angle']
         elif key == keyboard.Key.left:
             print("left")
-            angle -= 0.1
+            angle -= CONFIG['turn-angle']
         elif key == keyboard.Key.space:
             print("stop")
             bot.setVelocity(0, 0)
@@ -77,15 +73,15 @@ try:
         # Get an image from the robot
         img = bot.getImage()
         
-        angle = np.clip(angle, -0.5, 0.5)
-        Kd = 20  # Base wheel speeds
-        Ka = 20  # Turn speed
+        angle = np.clip(angle, -CONFIG['max-abs-angle'], CONFIG['max-abs-angle'])
+        Kd = CONFIG['wheel-speed']  # Base wheel speeds
+        Ka = CONFIG['turn-speed'] # Turn speed
         left  = int(Kd + Ka*angle)
         right = int(Kd - Ka*angle)
         
         bot.setVelocity(left, right)
 
-        cv2.imwrite(script_path+"/../data/"+args.folder+"/"+str(im_number).zfill(6)+'%.2f'%angle+".jpg", img) 
+        cv2.imwrite(script_path+"/../data/"+CONFIG['folder']+"/"+str(im_number).zfill(6)+'%.2f'%angle+".jpg", img) 
         im_number += 1
 
         time.sleep(0.1)  # Small delay to reduce CPU usage

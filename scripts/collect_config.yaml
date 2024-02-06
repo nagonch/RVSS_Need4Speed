@@ -1,0 +1,7 @@
+ip-num: "192.168.1.28"
+im-num: 0
+folder: train
+turn-angle: 0.1
+max-abs-angle: 0.5
+wheel-speed: 10
+turn-speed: 10
