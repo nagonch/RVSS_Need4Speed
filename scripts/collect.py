@@ -14,6 +14,8 @@ sys.path.append(os.path.abspath(os.path.join(script_path, "../PenguinPi-robot/so
 
 
 FOLDER_NAME = CONFIG['folder']
+if not os.path.isdir(f'data/{FOLDER_NAME}'):
+    os.makedirs(f'data/{FOLDER_NAME}')
 if not os.path.exists(script_path+"/../data/"+CONFIG['folder']):
     data_path = script_path.replace('scripts', 'data')
     print(f'Folder "{FOLDER_NAME}" in path {data_path} does not exist. Please create it.')
