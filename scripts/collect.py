@@ -12,9 +12,11 @@ with open('scripts/collect_config.yaml', 'r') as file:
 script_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.abspath(os.path.join(script_path, "../PenguinPi-robot/software/python/client/")))
 
+
+FOLDER_NAME = CONFIG['folder']
 if not os.path.exists(script_path+"/../data/"+CONFIG['folder']):
     data_path = script_path.replace('scripts', 'data')
-    print(f'Folder "{CONFIG.folder}" in path {data_path} does not exist. Please create it.')
+    print(f'Folder "{FOLDER_NAME}" in path {data_path} does not exist. Please create it.')
     exit()
 
 from pibot_client import PiBot
