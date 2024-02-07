@@ -5,6 +5,7 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import Resize
 import yaml
 from tqdm import tqdm
+from torch import nn
 
 with open('scripts/train_config.yaml', 'r') as file:
     CONFIG = yaml.safe_load(file)
@@ -21,6 +22,7 @@ def get_data(dataset_path):
     return train_dataloader, test_dataloader
 
 def train(model, train_dataloader):
+    loss = nn.MSELoss()
     for epoch in tqdm(range(CONFIG['n-epochs'])):
         for item in train_dataloader:
             x, y = item
@@ -28,7 +30,7 @@ def train(model, train_dataloader):
             y = y.cuda()
             y_pred = model(x)
             y_pred = torch.clip(y_pred, min=-CONFIG['max-abs-angle'], max=CONFIG['max-abs-angle'])
-            print(y_pred)
+            loss_val = loss(y_pred, y)
 
 if __name__ == "__main__":
     train_dataloader, test_dataloader = get_data("data/track3")
