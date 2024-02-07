@@ -25,7 +25,6 @@ def get_data(dataset_path):
 
 def train(model, train_dataloader, test_dataloader):
     optimizer = torch.optim.Adam(model.parameters(), lr=CONFIG['lr'])
-    lambda_lr = lambda epoch: 0.95 ** epoch
     scheduler = StepLR(optimizer, step_size=30, gamma=0.1, verbose=True)
     loss = nn.MSELoss()
     loss_values = []

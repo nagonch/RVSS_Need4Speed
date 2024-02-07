@@ -5,14 +5,20 @@ from torch.utils.data import Dataset
 import cv2
 from glob import glob
 from os import path
+import os
 
 class SteerDataSet(Dataset):
     
     def __init__(self,root_folder,img_ext = ".jpg" , transform=None):
         self.root_folder = root_folder
         self.transform = transform        
-        self.img_ext = img_ext        
-        self.filenames = glob(path.join(self.root_folder,"*" + self.img_ext))            
+        self.img_ext = img_ext
+        self.filenames = []
+        for folder in os.listdir(root_folder):
+            for item in os.listdir(f'{root_folder}/{folder}'):
+                file = f'{root_folder}/{folder}/{item}'
+                if file.endswith('.jpg'):
+                    self.filenames.append(f'{root_folder}/{folder}/{item}')
         self.totensor = transforms.ToTensor()
         self.resize = transforms.Resize((224, 224), antialias=True)
         
@@ -35,6 +41,6 @@ class SteerDataSet(Dataset):
 
 if __name__ == "__main__":
     pass
-    # DS = SteerDataSet("data\\track3")
+    # DS = SteerDataSet("data")
     # for item in DS:
     #     print(item[0].shape, item[1])
