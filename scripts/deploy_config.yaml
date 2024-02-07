@@ -1,0 +1,4 @@
+wheel-speed: 10
+turn-speed: 10
+model-path: "training/model_all_datasets.pt"
+ip: "192.168.1.22"

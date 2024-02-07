@@ -15,20 +15,22 @@ import torchvision.transforms as transforms
 script_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.abspath(os.path.join(script_path, "../PenguinPi-robot/software/python/client/")))
 from pibot_client import PiBot
+from torchvision.transforms import Resize
+import yaml
+from image_encoder import Regressor
 
+with open('scripts/deploy_config.yaml', 'r') as file:
+    CONFIG = yaml.safe_load(file)
 
-parser = argparse.ArgumentParser(description='PiBot client')
-parser.add_argument('--ip', type=str, default='localhost', help='IP address of PiBot')
-args = parser.parse_args()
-
-bot = PiBot(ip=args.ip)
+bot = PiBot(ip=CONFIG['ip'])
 
 # stop the robot 
 bot.setVelocity(0, 0)
 
-#INITIALISE NETWORK HERE
-
-#LOAD NETWORK WEIGHTS HERE
+model = Regressor()
+model_state = torch.load(CONFIG['model-path'])
+model.load_state_dict(model_state)
+model = model.cuda()
 
 #countdown before beginning
 print("Get ready...")
@@ -41,24 +43,24 @@ print("1")
 time.sleep(1)
 print("GO!")
 
+img_transform = Resize((224, 224), antialias=True)
+
 try:
     angle = 0
     while True:
         # get an image from the the robot
-        im = bot.getImage()
-
-        #TO DO: apply any necessary image transforms
-
-        #TO DO: pass image through network get a prediction
-
-        #TO DO: convert prediction into a meaningful steering angle
-
-        #TO DO: check for stop signs?
-        
-        angle = 0
-
-        Kd = 20 #base wheel speeds, increase to go faster, decrease to go slower
-        Ka = 20 #how fast to turn when given an angle
+        img = bot.getImage()
+        img_shape = img.shape
+        img = img[img_shape[0]//3:, :, :]
+        img = torch.tensor(img).permute(-1, 0, 1)
+        img = img_transform(img).float().cuda()
+        img = img[None, :, :, :]
+        pred = float(model(img)[0][0].detach().cpu().numpy())
+        #TODO: stop??
+        angle = pred
+        print(angle)
+        Kd = CONFIG['wheel-speed'] #base wheel speeds, increase to go faster, decrease to go slower
+        Ka = CONFIG['turn-speed'] #how fast to turn when given an angle
         left  = int(Kd + Ka*angle)
         right = int(Kd - Ka*angle)
             
