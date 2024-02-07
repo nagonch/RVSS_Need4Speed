@@ -76,6 +76,6 @@ def train(model, train_dataloader, test_dataloader):
         plt.close()
 
 if __name__ == "__main__":
-    train_dataloader, test_dataloader = get_data("data/track3")
+    train_dataloader, test_dataloader = get_data("data")
     model = Regressor().cuda()
     result = train(model, train_dataloader, test_dataloader)
