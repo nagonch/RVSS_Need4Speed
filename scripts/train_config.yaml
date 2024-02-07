@@ -1,4 +1,5 @@
 train-size: 0.7
-batch-size: 16
+batch-size: 32
 n-epochs: 1000
 max-abs-angle: 0.5
+lr: 0.001
