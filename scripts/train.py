@@ -29,6 +29,7 @@ def train(model, train_dataloader, test_dataloader):
     loss = nn.MSELoss()
     loss_values = []
     val_losses = []
+    val_metrics = []
     for epoch in tqdm(range(CONFIG['n-epochs'])):
         loss_epoch = []
         for item in train_dataloader:
@@ -52,16 +53,26 @@ def train(model, train_dataloader, test_dataloader):
         plt.close()
     
         with torch.no_grad():
+            val_loss = []
+            val_metric = []
             for item in test_dataloader:
                 x, y = item
                 x = x.cuda()
                 y = y.cuda()
                 y_pred = model(x).reshape(-1)
                 loss_val = loss(y_pred, y)
-                val_losses.append(loss_val.cpu())
+                val_loss.append(loss_val.cpu())
+                metric = torch.rad2deg(torch.abs(y_pred - y).mean())
+                val_metric.append(metric)
+            val_losses.append(torch.tensor(val_loss).mean())
+            val_metrics.append(torch.tensor(val_metric).mean())
         plt.plot(val_losses)
         plt.show()
         plt.savefig('training/loss_val.png')
+        plt.close()
+        plt.plot(val_metrics)
+        plt.show()
+        plt.savefig('training/metric_val.png')
         plt.close()
 
 if __name__ == "__main__":
