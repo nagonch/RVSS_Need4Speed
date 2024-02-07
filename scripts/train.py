@@ -14,16 +14,12 @@ if __name__ == "__main__":
     train_size = CONFIG['train-size']
     train_elements = int(dataset_size * train_size)
     train_set, val_set = torch.utils.data.random_split(dataset, [train_elements, dataset_size-train_elements])
-    train_dataloader = DataLoader(train_set, batch_size=64, shuffle=True)
-    test_dataloader = DataLoader(val_set, batch_size=64, shuffle=True)
-    for x in train_dataloader:
-        print(x[0].shape)
-        raise
-    raise
-    for item in ds:
-        transform = Resize((224, 224))
-        img = transform(item[0]).cuda()
-        break
-    print(img.shape, img[None].shape)
+    train_dataloader = DataLoader(train_set, batch_size=16, shuffle=True)
+    test_dataloader = DataLoader(val_set, batch_size=16, shuffle=True)
     model = ViTRegressor().cuda()
-    print(model(img[None]))
+    for item in train_dataloader:
+        x, y = item
+        x = x.cuda()
+        y = y.cuda()
+        print(model(x))
+        raise
