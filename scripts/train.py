@@ -1,6 +1,6 @@
 import torch
 from steerDS import SteerDataSet
-from image_encoder import ViTRegressor
+from image_encoder import Regressor
 from torch.utils.data import DataLoader
 from torchvision.transforms import Resize
 import yaml
@@ -23,11 +23,12 @@ def get_data(dataset_path):
 
     return train_dataloader, test_dataloader
 
-def train(model, train_dataloader):
+def train(model, train_dataloader, test_dataloader):
     optimizer = torch.optim.Adam(model.parameters(), lr=CONFIG['lr'])
     scheduler = StepLR(optimizer, step_size=CONFIG['sched-step'], gamma=CONFIG['sched-gamma'])
     loss = nn.MSELoss()
     loss_values = []
+    val_losses = []
     for epoch in tqdm(range(CONFIG['n-epochs'])):
         loss_epoch = []
         for item in train_dataloader:
@@ -36,20 +37,34 @@ def train(model, train_dataloader):
             x = x.cuda()
             y = y.cuda()
             y_pred = model(x).reshape(-1)
-            loss_val = loss(y_pred, y)
-            loss_epoch.append(loss_val)
-            loss_val.backward()
+            loss_train = loss(y_pred, y)
+            loss_epoch.append(loss_train)
+            loss_train.backward()
             optimizer.step()
             scheduler.step()
         epoch_loss = torch.mean(torch.tensor(loss_epoch))
         print(f"{epoch}: {epoch_loss}")
         loss_values.append(epoch_loss)
+        torch.save(model.state_dict(), 'training/model.pt')
         plt.plot(loss_values)
         plt.show()
-        plt.savefig('loss.png')
+        plt.savefig('training/loss_train.png')
+        plt.close()
+    
+        with torch.no_grad():
+            for item in test_dataloader:
+                x, y = item
+                x = x.cuda()
+                y = y.cuda()
+                y_pred = model(x).reshape(-1)
+                loss_val = loss(y_pred, y)
+                val_losses.append(loss_val.cpu())
+        plt.plot(val_losses)
+        plt.show()
+        plt.savefig('training/loss_val.png')
         plt.close()
 
 if __name__ == "__main__":
     train_dataloader, test_dataloader = get_data("data/track3")
-    model = ViTRegressor().cuda()
-    result = train(model, train_dataloader)
+    model = Regressor().cuda()
+    result = train(model, train_dataloader, test_dataloader)

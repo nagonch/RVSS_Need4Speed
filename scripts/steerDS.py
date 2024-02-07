@@ -22,15 +22,15 @@ class SteerDataSet(Dataset):
     def __getitem__(self,idx):
         f = self.filenames[idx]        
         img = cv2.imread(f)
-        
+        img_shape = img.shape
+        img = img[img_shape[0]//3:, :, :]
         if self.transform == None:
             img = self.totensor(img)
         else:
             img = self.transform(img)   
         
         steering = f.split("/")[-1].split(self.img_ext)[0][6:]
-        steering = np.float32(float(steering))        
-                      
+        steering = np.float32(float(steering))      
         return self.resize(img), steering
 
 if __name__ == "__main__":
