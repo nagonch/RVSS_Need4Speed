@@ -14,10 +14,8 @@ with open('scripts/train_config.yaml', 'r') as file:
 
 def get_data(dataset_path):
     dataset = SteerDataSet(dataset_path)
-    dataset_size = len(dataset)
     train_size = CONFIG['train-size']
-    train_elements = int(dataset_size * train_size)
-    train_set, val_set = torch.utils.data.random_split(dataset, [train_elements, dataset_size-train_elements])
+    train_set, val_set = torch.utils.data.random_split(dataset, [train_size, 1-train_size])
     train_dataloader = DataLoader(train_set, batch_size=CONFIG['batch-size'], shuffle=True)
     test_dataloader = DataLoader(val_set, batch_size=CONFIG['batch-size'], shuffle=True)
 
