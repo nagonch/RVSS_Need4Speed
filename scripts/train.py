@@ -6,6 +6,7 @@ from torchvision.transforms import Resize
 import yaml
 from tqdm import tqdm
 from torch import nn
+from torch.optim.lr_scheduler import StepLR
 
 with open('scripts/train_config.yaml', 'r') as file:
     CONFIG = yaml.safe_load(file)
@@ -23,6 +24,7 @@ def get_data(dataset_path):
 
 def train(model, train_dataloader):
     optimizer = torch.optim.Adam(model.parameters(), lr=CONFIG['lr'])
+    scheduler = StepLR(optimizer, step_size=CONFIG['sched-step'], gamma=CONFIG['sched-gamma'])
     loss = nn.MSELoss()
     for epoch in tqdm(range(CONFIG['n-epochs'])):
         for item in train_dataloader:
@@ -35,6 +37,7 @@ def train(model, train_dataloader):
             loss_val = loss(y_pred, y)
             loss_val.backward()
             optimizer.step()
+            scheduler.step()
         print(f"{epoch}: {loss_val}")
 
 if __name__ == "__main__":
