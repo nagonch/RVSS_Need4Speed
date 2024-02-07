@@ -1,6 +1,7 @@
 import torch
 from steerDS import SteerDataSet
 from image_encoder import ViTRegressor
+from torch.utils.data import DataLoader
 from torchvision.transforms import Resize
 import yaml
 
@@ -13,7 +14,8 @@ if __name__ == "__main__":
     train_size = CONFIG['train-size']
     train_elements = int(dataset_size * train_size)
     train_set, val_set = torch.utils.data.random_split(dataset, [train_elements, dataset_size-train_elements])
-    print(len(train_set), len(val_set))
+    train_dataloader = DataLoader(train_set, batch_size=64, shuffle=True)
+    test_dataloader = DataLoader(val_set, batch_size=64, shuffle=True)
     raise
     for item in ds:
         transform = Resize((224, 224))
