@@ -1,1 +1,2 @@
 train-size: 0.7
+batch-size: 16

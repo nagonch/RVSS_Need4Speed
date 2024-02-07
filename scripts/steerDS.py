@@ -14,7 +14,7 @@ class SteerDataSet(Dataset):
         self.img_ext = img_ext        
         self.filenames = glob(path.join(self.root_folder,"*" + self.img_ext))            
         self.totensor = transforms.ToTensor()
-        self.resize = transforms.Resize((224, 224))
+        self.resize = transforms.Resize((224, 224), antialias=True)
         
     def __len__(self):        
         return len(self.filenames)
