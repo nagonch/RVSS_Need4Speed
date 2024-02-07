@@ -44,10 +44,10 @@ def train(model, train_dataloader, test_dataloader):
         epoch_loss = torch.mean(torch.tensor(loss_epoch))
         print(f"{epoch}: {epoch_loss}")
         loss_values.append(epoch_loss)
-        torch.save(model.state_dict(), 'training/model.pt')
+        torch.save(model.state_dict(), f'training/{CONFIG["model-name"]}.pt')
         plt.plot(loss_values)
         plt.show()
-        plt.savefig('training/loss_train.png')
+        plt.savefig(f'training/{CONFIG["model-name"]}_loss_train.png')
         plt.close()
     
         with torch.no_grad():
@@ -66,11 +66,11 @@ def train(model, train_dataloader, test_dataloader):
             val_metrics.append(torch.tensor(val_metric).mean())
         plt.plot(val_losses)
         plt.show()
-        plt.savefig('training/loss_val.png')
+        plt.savefig(f'training/{CONFIG["model-name"]}_loss_val.png')
         plt.close()
         plt.plot(val_metrics)
         plt.show()
-        plt.savefig('training/metric_val.png')
+        plt.savefig(f'training/{CONFIG["model-name"]}_metric_val.png')
         plt.close()
 
 if __name__ == "__main__":
