@@ -16,6 +16,9 @@ if __name__ == "__main__":
     train_set, val_set = torch.utils.data.random_split(dataset, [train_elements, dataset_size-train_elements])
     train_dataloader = DataLoader(train_set, batch_size=64, shuffle=True)
     test_dataloader = DataLoader(val_set, batch_size=64, shuffle=True)
+    for x in train_dataloader:
+        print(x[0].shape)
+        raise
     raise
     for item in ds:
         transform = Resize((224, 224))

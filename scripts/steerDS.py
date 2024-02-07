@@ -14,6 +14,7 @@ class SteerDataSet(Dataset):
         self.img_ext = img_ext        
         self.filenames = glob(path.join(self.root_folder,"*" + self.img_ext))            
         self.totensor = transforms.ToTensor()
+        self.resize = transforms.Resize((224, 224))
         
     def __len__(self):        
         return len(self.filenames)
@@ -30,7 +31,7 @@ class SteerDataSet(Dataset):
         steering = f.split("/")[-1].split(self.img_ext)[0][6:]
         steering = np.float32(float(steering))        
                       
-        return img, steering
+        return self.resize(img), steering
 
 if __name__ == "__main__":
     pass
