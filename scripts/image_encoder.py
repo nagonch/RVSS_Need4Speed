@@ -12,7 +12,8 @@ with open('scripts/train_config.yaml', 'r') as file:
 class Regressor(torch.nn.Module):
     def __init__(self):
         super(Regressor, self).__init__()
-        self.squeezenet = squeezenet1_1(weights=SqueezeNet1_1_Weights)
+        self.squeezenet = squeezenet1_1(SqueezeNet1_1_Weights)
+        self.squeezenet.requires_grad = False
         self.linear = torch.nn.Linear(1000, 1)
 
     def forward(self, x):

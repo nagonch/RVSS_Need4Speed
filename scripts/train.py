@@ -7,7 +7,7 @@ import yaml
 from tqdm import tqdm
 from torch import nn
 import matplotlib.pyplot as plt
-from torch.optim.lr_scheduler import StepLR
+from torch.optim.lr_scheduler import LambdaLR
 
 with open('scripts/train_config.yaml', 'r') as file:
     CONFIG = yaml.safe_load(file)
@@ -25,7 +25,8 @@ def get_data(dataset_path):
 
 def train(model, train_dataloader, test_dataloader):
     optimizer = torch.optim.Adam(model.parameters(), lr=CONFIG['lr'])
-    scheduler = StepLR(optimizer, step_size=CONFIG['sched-step'], gamma=CONFIG['sched-gamma'])
+    lambda_lr = lambda epoch: 0.95 ** epoch
+    scheduler = LambdaLR(optimizer, lr_lambda=lambda_lr)
     loss = nn.MSELoss()
     loss_values = []
     val_losses = []
@@ -42,7 +43,7 @@ def train(model, train_dataloader, test_dataloader):
             loss_epoch.append(loss_train)
             loss_train.backward()
             optimizer.step()
-            scheduler.step()
+            # scheduler.step(epoch)
         epoch_loss = torch.mean(torch.tensor(loss_epoch))
         print(f"{epoch}: {epoch_loss}")
         loss_values.append(epoch_loss)
