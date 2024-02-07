@@ -21,13 +21,4 @@ class ViTRegressor(torch.nn.Module):
 
 
 if __name__ == "__main__":
-    from steerDS import SteerDataSet
-
-    ds = SteerDataSet("data/track3")
-    for item in ds:
-        transform = Resize((224, 224))
-        img = transform(item[0]).cuda()
-        break
-    print(img.shape, img[None].shape)
-    model = ViTRegressor().cuda()
-    print(model(img[None]))
+    pass
