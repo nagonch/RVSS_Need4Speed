@@ -1,11 +1,13 @@
 import numpy as np
 from glob import glob
 from torchvision import transforms
+from torchvision.transforms import v2
 from torch.utils.data import Dataset
 import cv2
 from glob import glob
 from os import path
 import os
+import torch
 
 class SteerDataSet(Dataset):
     
@@ -21,6 +23,8 @@ class SteerDataSet(Dataset):
                     self.filenames.append(f'{root_folder}/{folder}/{item}')
         self.totensor = transforms.ToTensor()
         self.resize = transforms.Resize((224, 224), antialias=True)
+        self.colorjit = v2.ColorJitter()
+        self.flip = v2.RandomHorizontalFlip(p=0.5)
         
     def __len__(self):        
         return len(self.filenames)
@@ -36,11 +40,17 @@ class SteerDataSet(Dataset):
             img = self.transform(img)   
         
         steering = f.split("/")[-1].split(self.img_ext)[0][6:]
-        steering = np.float32(float(steering))      
-        return self.resize(img), steering
+        steering = np.float32(float(steering)) 
+        img = self.resize(img)
+        img = self.colorjit(img)
+        flipped_img = self.flip(img)
+        if not (flipped_img == img).all():
+            steering = -steering
+        return img, steering
 
 if __name__ == "__main__":
     pass
-    # DS = SteerDataSet("data")
-    # for item in DS:
-    #     print(item[0].shape, item[1])
+    DS = SteerDataSet("data")
+    for item in DS:
+        print(item[0].shape, item[1])
+        raise
