@@ -6,6 +6,7 @@ from torchvision.transforms import Resize
 import yaml
 from tqdm import tqdm
 from torch import nn
+import matplotlib.pyplot as plt
 from torch.optim.lr_scheduler import StepLR
 
 with open('scripts/train_config.yaml', 'r') as file:
@@ -26,19 +27,27 @@ def train(model, train_dataloader):
     optimizer = torch.optim.Adam(model.parameters(), lr=CONFIG['lr'])
     scheduler = StepLR(optimizer, step_size=CONFIG['sched-step'], gamma=CONFIG['sched-gamma'])
     loss = nn.MSELoss()
+    loss_values = []
     for epoch in tqdm(range(CONFIG['n-epochs'])):
+        loss_epoch = []
         for item in train_dataloader:
             optimizer.zero_grad()
             x, y = item
             x = x.cuda()
             y = y.cuda()
             y_pred = model(x).reshape(-1)
-            y_pred = torch.clip(y_pred, min=-CONFIG['max-abs-angle'], max=CONFIG['max-abs-angle'])
             loss_val = loss(y_pred, y)
+            loss_epoch.append(loss_val)
             loss_val.backward()
             optimizer.step()
             scheduler.step()
-        print(f"{epoch}: {loss_val}")
+        epoch_loss = torch.mean(torch.tensor(loss_epoch))
+        print(f"{epoch}: {epoch_loss}")
+        loss_values.append(epoch_loss)
+        plt.plot(loss_values)
+        plt.show()
+        plt.savefig('loss.png')
+        plt.close()
 
 if __name__ == "__main__":
     train_dataloader, test_dataloader = get_data("data/track3")

@@ -4,7 +4,10 @@ import torch.nn.functional as F
 import matplotlib.pyplot as plt
 import numpy as np
 from torchvision.transforms import Resize
+import yaml
 
+with open('scripts/train_config.yaml', 'r') as file:
+    CONFIG = yaml.safe_load(file)
 
 class ViTRegressor(torch.nn.Module):
     def __init__(self):
@@ -16,7 +19,7 @@ class ViTRegressor(torch.nn.Module):
         x = self.vit(x)
         x = F.relu(x)
         x = self.linear(x)
-        x = F.relu(x)
+        x = F.tanh(x) * CONFIG['max-abs-angle']
         return x
 
 
