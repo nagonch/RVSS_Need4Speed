@@ -8,6 +8,7 @@ from glob import glob
 from os import path
 import os
 import torch
+from PIL import Image
 
 class SteerDataSet(Dataset):
     
@@ -23,15 +24,14 @@ class SteerDataSet(Dataset):
                     self.filenames.append(f'{root_folder}/{folder}/{item}')
         self.totensor = transforms.ToTensor()
         self.resize = transforms.Resize((224, 224), antialias=True)
-        self.colorjit = v2.ColorJitter()
-        self.flip = v2.RandomHorizontalFlip(p=0.5)
         
     def __len__(self):        
         return len(self.filenames)
     
     def __getitem__(self,idx):
-        f = self.filenames[idx]        
-        img = cv2.imread(f)
+        f = self.filenames[idx]
+        with Image.open(f) as im:
+            img = np.array(im)        
         img_shape = img.shape
         img = img[img_shape[0]//3:, :, :]
         if self.transform == None:
@@ -46,8 +46,12 @@ class SteerDataSet(Dataset):
 
 if __name__ == "__main__":
     pass
-    DS = SteerDataSet("data")
-    for item in DS:
-        img = item[0]
-        avg_color = img.mean(axis=(1,2))
-        print(avg_color)
+    # DS = SteerDataSet("data")
+    # from matplotlib import pyplot as plt
+    # for item in DS:
+    #     img = item[0]
+    #     avg_color = img.mean(axis=(1,2))
+    #     plt.imshow(img.permute(1, 2, 0).detach().cpu().numpy())
+    #     plt.show()
+    #     plt.close()
+    #     print(avg_color.argmax())
