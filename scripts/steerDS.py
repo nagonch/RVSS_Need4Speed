@@ -19,7 +19,7 @@ class SteerDataSet(Dataset):
         for folder in os.listdir(root_folder):
             for item in os.listdir(f'{root_folder}/{folder}'):
                 file = f'{root_folder}/{folder}/{item}'
-                if file.endswith('.jpg'):
+                if file.endswith('.jpg') and not ")" in file and not "()" in file:
                     self.filenames.append(f'{root_folder}/{folder}/{item}')
         self.totensor = transforms.ToTensor()
         self.resize = transforms.Resize((224, 224), antialias=True)
@@ -48,5 +48,6 @@ if __name__ == "__main__":
     pass
     DS = SteerDataSet("data")
     for item in DS:
-        print(item[0].shape, item[1])
-        raise
+        img = item[0]
+        avg_color = img.mean(axis=(1,2))
+        print(avg_color)
