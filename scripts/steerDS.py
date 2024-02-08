@@ -42,11 +42,7 @@ class SteerDataSet(Dataset):
         steering = f.split("/")[-1].split(self.img_ext)[0][6:]
         steering = np.float32(float(steering)) 
         img = self.resize(img)
-        # img = self.colorjit(img)
-        flipped_img = self.flip(img)
-        if not (flipped_img == img).all():
-            steering = -steering
-        return flipped_img, steering
+        return img, steering
 
 if __name__ == "__main__":
     pass

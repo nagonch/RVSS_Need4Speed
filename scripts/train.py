@@ -76,4 +76,7 @@ def train(model, train_dataloader, test_dataloader):
 if __name__ == "__main__":
     train_dataloader, test_dataloader = get_data("data")
     model = Regressor().cuda()
+    if CONFIG['weights'] != "none":
+        model_state = torch.load(CONFIG['weights'])
+        model.load_state_dict(model_state)
     result = train(model, train_dataloader, test_dataloader)

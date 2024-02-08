@@ -5,4 +5,5 @@ max-abs-angle: 0.5
 lr: 0.0001
 sched-step: 30
 sched-gamma: 0.1
-model-name: model_flip_aug
+model-name: model_more_train
+weights: "training/model_all_datasets.pt"
