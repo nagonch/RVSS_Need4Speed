@@ -23,6 +23,7 @@ class SteerDataSet(Dataset):
                 if file.endswith('.jpg') and not ")" in file and not "()" in file:
                     self.filenames.append(f'{root_folder}/{folder}/{item}')
         self.totensor = transforms.ToTensor()
+        self.normalise = transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
         self.resize = transforms.Resize((224, 224), antialias=True)
         
     def __len__(self):        
