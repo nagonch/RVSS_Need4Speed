@@ -26,6 +26,7 @@ imglist = sorted(glob.glob(os.path.join(path, '*.jpg')))
 def is_stop(im, detector, area_intrest, min_size_thr, max_size_thr):
     """Returns True if a red blob of big enough size is found in the image.
     Image is as a three dimensinal matrix (as if created by cv.read)"""
+    im = np.array(im) 
     im = im[100:,:] #remove top
     imgh, imgw, _ = im.shape
     keypoints = detector.detect(im)
@@ -72,8 +73,8 @@ i = 0
 for img in imglist:
   
     im = cv.imread(img) # get image from pi_bot
- 
-    ## is there a stop sign?
+    
+    # ## is there a stop sign?
     stop = is_stop(im, detector, area_intrest, min_size_thr, max_size_thr)
     if stop:
         stop_tracker.append(1)
@@ -91,7 +92,7 @@ for img in imglist:
     # If first time encountering image, then stop
     if not old_stop and stop:
         print("STOP")
-        
+
 
     i += 1
     

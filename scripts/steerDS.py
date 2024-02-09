@@ -33,7 +33,7 @@ class SteerDataSet(Dataset):
         f = self.filenames[idx]
         with Image.open(f) as im:
             img = np.array(im) 
-            ## adding in random rectangles
+            ## adding in random white rectangles
             x1 = np.random.randint(0, img.shape[0])   
             y1 = np.random.randint(0, img.shape[1])
             x2 = min(np.random.randint(1, img.shape[0]), img.shape[0], x1+50)
