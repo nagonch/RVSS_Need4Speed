@@ -44,7 +44,8 @@ def train(model, train_dataloader, test_dataloader):
             y_pred = model(x).reshape(-1)
             weights = x.mean(axis=(2, 3)).argmax()
             weights = (weights == 2).to(torch.float32) * CONFIG['orange-coeff'] + (weights != 2).to(torch.float32)
-            loss_train = weighted_mse_loss(y_pred, y, weights.cuda())
+            #loss_train = weighted_mse_loss(y_pred, y, weights.cuda())
+            loss_train = L1loss(y_pred, y, weights.cuda()) # L1loss suggested by Dimity
             loss_epoch.append(loss_train)
             loss_train.backward()
             optimizer.step()
