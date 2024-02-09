@@ -32,7 +32,15 @@ class SteerDataSet(Dataset):
     def __getitem__(self,idx):
         f = self.filenames[idx]
         with Image.open(f) as im:
-            img = np.array(im)        
+            img = np.array(im) 
+            ## adding in random rectangles
+            x1 = np.random.randint(0, img.shape[0])   
+            y1 = np.random.randint(0, img.shape[1])
+            x2 = min(np.random.randint(1, img.shape[0]), img.shape[0], x1+50)
+            y2 = min(np.random.randint(1, img.shape[1]), img.shape[1], y1+50)
+            cv2.rectangle(img, (x1, y1), (x2, y2), (255, 255, 255), -1)
+
+
         img_shape = img.shape
         img = img[img_shape[0]//3:, :, :]
         if self.transform == None:
