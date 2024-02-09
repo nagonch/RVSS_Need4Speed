@@ -21,6 +21,9 @@ def get_data(dataset_path):
 
     return train_dataloader, test_dataloader
 
+def weighted_mse_loss(input, target, weight):
+    return torch.sum(weight * (input - target) ** 2)
+
 def train(model, train_dataloader, test_dataloader):
     optimizer = torch.optim.Adam(model.parameters(), lr=CONFIG['lr'])
     scheduler = StepLR(optimizer, step_size=30, gamma=0.1, verbose=True)
@@ -36,7 +39,9 @@ def train(model, train_dataloader, test_dataloader):
             x = x.cuda()
             y = y.cuda()
             y_pred = model(x).reshape(-1)
-            loss_train = loss(y_pred, y)
+            weights = x.mean(axis=(2, 3)).argmax()
+            weights = (weights == 2).to(torch.float32) * CONFIG['orange-coeff'] + (weights != 2).to(torch.float32)
+            loss_train = weighted_mse_loss(y_pred, y, weights.cuda())
             loss_epoch.append(loss_train)
             loss_train.backward()
             optimizer.step()

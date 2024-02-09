@@ -2,8 +2,9 @@ train-size: 0.7
 batch-size: 32
 n-epochs: 1000
 max-abs-angle: 0.5
-lr: 0.0001
+lr: 0.001
 sched-step: 30
 sched-gamma: 0.1
-model-name: model_all_datasets_plus
-weights: "training/model_all_datasets.pt"
+orange-coeff: 5
+model-name: remove_activation
+weights: dataset_fix_color_fix_loss_train
