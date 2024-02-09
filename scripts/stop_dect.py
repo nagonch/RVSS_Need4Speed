@@ -64,15 +64,36 @@ def is_stop(im, detector, area_intrest, min_size_thr, max_size_thr):
     # cv.imshow("Keypoints", im_with_keypoints)
     # cv.waitKey(0)
 
+###### only stop at a stop sign once
+
+stop_tracker = [0] #'0' if not a stop, '1' if a stop
+i = 0
+#imagine this for loop is the run loop of robot
 for img in imglist:
-    if i > 100:
-        break
-    i += 1
-    print(f'img = {os.path.basename(img)}')
-    im = cv.imread(img)
+  
+    im = cv.imread(img) # get image from pi_bot
+ 
+    ## is there a stop sign?
     stop = is_stop(im, detector, area_intrest, min_size_thr, max_size_thr)
     if stop:
-        print("stop detected")
+        stop_tracker.append(1)
+    else:
+        stop_tracker.append(0)
+   
+    # Is this the first time encountering this sign (in the last 5 images)
+    max_len = min(len(stop_tracker),5)
+    old_stop = False
+    for j in range(max_len):
+        if j > len(stop_tracker):
+            break
+        if stop_tracker[i - j] == 1:
+            old_stop = True
+    # If first time encountering image, then stop
+    if not old_stop and stop:
+        print("STOP")
+        
+
+    i += 1
     
 
 
