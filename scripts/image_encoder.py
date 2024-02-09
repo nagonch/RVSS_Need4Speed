@@ -20,7 +20,7 @@ class Regressor(torch.nn.Module):
         x = self.squeezenet(x)
         x = F.relu(x)
         x = self.linear(x)
-        x = F.tanh(x) * CONFIG['max-abs-angle']
+        x = F.softmax(x)
         return x
 
 

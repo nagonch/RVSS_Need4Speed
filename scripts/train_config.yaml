@@ -6,5 +6,5 @@ lr: 0.001
 sched-step: 30
 sched-gamma: 0.1
 orange-coeff: 5
-model-name: remove_activation
-weights: dataset_fix_color_fix_loss_train
+model-name: switch_to_classification
+weights: none

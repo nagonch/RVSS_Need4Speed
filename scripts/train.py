@@ -7,6 +7,8 @@ import yaml
 from tqdm import tqdm
 from torch import nn
 import matplotlib.pyplot as plt
+from torcheval.metrics.functional import binary_f1_score
+import torch.nn.functional as F
 from torch.optim.lr_scheduler import StepLR
 
 with open('scripts/train_config.yaml', 'r') as file:
@@ -22,7 +24,8 @@ def get_data(dataset_path):
     return train_dataloader, test_dataloader
 
 def weighted_mse_loss(input, target, weight):
-    return torch.sum(weight * (input - target) ** 2)
+    loss = F.cross_entropy(input, target, reduction='none') * weight
+    return torch.sum(loss)
 
 def train(model, train_dataloader, test_dataloader):
     optimizer = torch.optim.Adam(model.parameters(), lr=CONFIG['lr'])
@@ -65,7 +68,7 @@ def train(model, train_dataloader, test_dataloader):
                 y_pred = model(x).reshape(-1)
                 loss_val = loss(y_pred, y)
                 val_loss.append(loss_val.cpu())
-                metric = torch.rad2deg(torch.abs(y_pred - y).mean())
+                metric = binary_f1_score(y_pred, y, threshold=0.5)
                 val_metric.append(metric)
             val_losses.append(torch.tensor(val_loss).mean())
             val_metrics.append(torch.tensor(val_metric).mean())
